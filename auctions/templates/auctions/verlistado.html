@@ -31,9 +31,13 @@
               <p class="text-sm text-center">No hay oferta registrada aún.</p>
           {% endif %}
       {% else %}
+          {% if oferta_mas_alta %}
           <p class="text-sm text-center">Oferta actual: ${{ oferta_mas_alta }}</p>
           <p class="text-sm text-center text-gray-600">Ofertado por: {{ postor_oferta_mas_alta.username }}</p>
           <p class="text-sm text-center text-gray-600 font-bold">La subasta está abierta.</p>
+          {% else %}
+          <p class="text-sm text-center text-gray-600 font-bold">La subasta está abierta.</p>
+          {% endif %}
       {% endif %}
       
       
