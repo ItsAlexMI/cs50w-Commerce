@@ -1,0 +1,37 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+<h2 class="text-2xl font-bold mb-4 ml-5">Mis listas seguidas</h2>
+
+{% if message %}
+<div>{{ message }}</div>
+{% endif %}
+
+<div class="w-3/4 p-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {% for listado in listados_seguidos %}
+        <div class="bg-white p-4 rounded-lg shadow-md">
+            <img src="{{ listado.url_imagen }}" alt="Imagen del proyecto" class="w-full h-auto mb-4 rounded-lg" />
+            <h3 class="text-lg font-semibold text-center">{{ listado.titulo }}</h3>
+            <p class="text-sm text-gray-600 text-center">{{ listado.descripcion }}</p>
+            <p class="text-sm text-center">Oferta inicial: ${{ listado.oferta_inicial }}</p>
+            <span class="text-sm ml-8 text-gray-600 text-center">Fecha de creación: {{ listado.fecha_creacion }}</span>
+            {% if user.is_authenticated %} 
+            <a href="{% url 'dejar_seguir_listado' listado.id %}">
+              <button
+                class="bg-red-500 hover-bg-red-400 text-white font-bold py-2 px-4 border-b-4 border-red-700 hover:border-red-500 rounded mt-3 w-full"
+              >
+                Dejar de seguir
+              </button>
+            </a>
+            {% endif %} 
+        </div>
+
+
+
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

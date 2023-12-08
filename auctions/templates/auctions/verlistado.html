@@ -1,0 +1,186 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+{% if message %}
+<div>{{ message }}</div>
+{% endif %}
+
+  <div class="flex justify-center">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      
+      <div class="w-full p-4 text-center">
+        <div class="bg-white p-4 rounded-lg shadow-md">
+          <img
+            src="{{ listado.url_imagen }}"
+            alt="Imagen del producto"
+            class="w-full h-auto mb-4 rounded-lg"
+          />
+          <h3 class="text-lg font-semibold text-center">{{ listado.titulo }}</h3>
+          <p class="text-sm text-gray-600 text-center">{{ listado.descripcion }}</p>
+          <p class="text-sm text-center">
+            Oferta inicial: ${{ listado.oferta_inicial }}
+          </p>
+
+          {% if listado.subasta_cerrada %}
+          {% if oferta_mas_alta %}
+              <p class="text-sm text-center">Oferta más alta: ${{ oferta_mas_alta }}</p>
+              <p class="text-md text-center text-green-500 font-bold">Ganador de la subasta: {{ postor_oferta_mas_alta.username }}</p>
+              <p class="text-sm text-center text-red-600 font-bold">La subasta ha sido cerrada.</p>
+          {% else %}
+              <p class="text-sm text-center">No hay oferta registrada aún.</p>
+          {% endif %}
+      {% else %}
+          <p class="text-sm text-center">Oferta actual: ${{ oferta_mas_alta }}</p>
+          <p class="text-sm text-center text-gray-600">Ofertado por: {{ postor_oferta_mas_alta.username }}</p>
+          <p class="text-sm text-center text-gray-600 font-bold">La subasta está abierta.</p>
+      {% endif %}
+      
+      
+    
+          <span class="text-sm ml-8 text-gray-600 text-center"
+            >Fecha de creación: {{ listado.fecha_creacion }}</span
+          >
+    
+          {% if user.is_authenticated %} {% if sigue_listado %}
+          <a href="{% url 'dejar_seguir_listado' listado.id %}">
+            <button
+              class="bg-red-500 hover-bg-red-400 text-white font-bold py-2 px-4 border-b-4 border-red-700 hover:border-red-500 rounded mt-3 w-full"
+            >
+              Dejar de seguir
+            </button>
+          </a>
+          {% else %}
+          <a href="{% url 'seguir_listado' listado.id %}">
+            <button
+              class="bg-blue-500 hover-bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded mt-3 w-full"
+            >
+              Seguir listado
+            </button>
+          </a>
+          {% endif %} {% endif %}
+
+          {% if not listado.subasta_cerrada %}
+          <form class="mt-4" id="formOferta" action="{% url 'haceroferta' listado.id %}" method="post">
+              {% csrf_token %}
+              <div class="mb-4">
+                  <input class="w-full px-3 py-2 border rounded-md text-center" type="text" name="oferta" placeholder="Ofertar" />
+              </div>
+              <button class="w-full px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 font-bold" type="submit">Ofertar</button>
+          </form>
+      
+          {% if user.is_authenticated %}
+              {% if user == listado.autorListado %}
+                  <a href="{% url 'cerrar_subasta' listado.id %}">
+                      <button class="mt-2 w-full px-4 py-2 text-white bg-red-500 rounded-md hover:bg-red-600 font-bold" type="button">Cerrar Subasta</button>
+                  </a>
+              {% endif %}
+          {% endif %}
+      {% endif %}
+      
+
+
+
+        </div>
+      </div>
+
+      <!-- Segunda tarjeta centrada -->
+      <div class="w-full p-4 text-center lg:col-span-1">
+        <div class="bg-white p-4 rounded-lg shadow-md ">
+          {% for comment in comentarios %}
+          <div class="bg-white p-4 rounded-lg shadow-md">
+            <p class="text-sm text-gray-600 text-center">{{ comment.texto }}</p>
+            <p class="text-sm ml-8 text-gray-400 text-center"
+              >Comentado por: {{ comment.comentarista }}</p
+            >
+            <p class="text-sm ml-8 text-gray-400 text-center"
+              >Comentado: {{ comment.timestamp }}</p
+            >
+          </div>
+    
+          <hr
+            style="
+              height: 1px;
+              border-width: 0;
+              color: gray;
+              background-color: gray;
+            "
+          />
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Tercera tarjeta a la derecha de la segunda -->
+      <div class="w-full p-4 text-center lg:col-span-1">
+        <div class="bg-white p-4 rounded-lg shadow-md">
+          <!-- Comentarios -->
+    
+          {% if user.is_authenticated %}
+          <form action="{% url 'crearcomentario' listado.id %}" method="post">
+            {% csrf_token %}
+            <div class="mb-4">
+              <textarea
+                class="w-full px-3 py-2 border rounded-md"
+                type="text"
+                name="comment"
+                placeholder="Comentar"
+              ></textarea>
+            </div>
+            <button
+              class="w-full px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600"
+              type="submit"
+            >
+              Comentar
+            </button>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
+
+  <script>
+      document.addEventListener("DOMContentLoaded", function() {
+          const form = document.querySelector('#formOferta'); 
+          form.addEventListener('submit', function(event) {
+              event.preventDefault();
+              const formData = new FormData(form);
+  
+              fetch(form.action, {
+                  method: 'POST',
+                  body: formData,
+                  headers: {
+                      'X-CSRFToken': '{{ csrf_token }}' 
+                  }
+              })
+              .then(response => {
+                  if (response.ok) {
+                      return response.json();
+                  } else {
+                      throw new Error('Error al hacer la oferta');
+                  }
+              })
+              .then(data => {
+                  if (data.success) {
+                      Swal.fire('¡Éxito!', data.message, 'success');
+
+                      setTimeout(function() {
+                          location.reload();
+                      }, 3000);
+                          
+                    
+                  
+                  } else {
+                      Swal.fire('Error', data.message, 'error');
+                  }
+              })
+              .catch(error => {
+                  console.error('Error:', error);
+                  Swal.fire('Error', 'El monto de la oferta no es valido, intente ofertar una mayor cantidad monetaria a la oferta inicial', 'error');
+              });
+          });
+      });
+  </script>
+{% endblock %}

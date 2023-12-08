@@ -6,7 +6,7 @@ from .models import *
 
 admin.site.register(User)
 admin.site.register(Listado)
-admin.site.register(Subasta)
 admin.site.register(Oferta)
 admin.site.register(Comentario)
+admin.site.register(ListaSeguimiento)
 

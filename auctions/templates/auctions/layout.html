@@ -5,24 +5,30 @@
     <head>
         <title>{% block title %}Auctions{% endblock %}</title>
         <script src="https://cdn.tailwindcss.com"></script>
-        <link href="{% static 'auctions/styles.css' %}" rel="stylesheet">
+        <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
     </head>
-    <body>
-        <h1>Auctions</h1>
-        <div>
+    <body  class="mb-4 bg-gray-200"> 
+        <h1 class="bg-white">Auctions</h1>
+        <div class="bg-white">
             {% if user.is_authenticated %}
                 Signed in as <strong>{{ user.username }}</strong>.
             {% else %}
                 Not signed in.
             {% endif %}
         </div>
-        <ul class="flex space-x-4 text-blue-500">
+        <ul class="flex space-x-4 text-blue-500 bg-white">
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'index' %}">Active Listings</a>
             </li>
             {% if user.is_authenticated %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'crearlistado' %}">Create Listing</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'mislistados' %}">Wish List</a>
                 </li>
             {% else %}
                 <li class="nav-item">
@@ -34,8 +40,10 @@
             {% endif %}
         </ul>
         
-        <hr>
+        <hr >
+       
         {% block body %}
         {% endblock %}
+ 
     </body>
 </html>

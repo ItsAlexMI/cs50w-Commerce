@@ -1,7 +1,34 @@
-{% extends "auctions/layout.html" %}
+{% extends "auctions/layout.html" %} {% block body %}
+<h2 class="text-2xl font-bold mb-4 ml-5">Active Listings</h2>
 
-{% block body %}
-    <h2>Active Listings</h2>
+{% if message %}
+<div>{{ message }}</div>
+{% endif %}
 
-    TODO
+<div class="w-3/4 p-4">
+  <div
+    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+  >
+    {% for listing in listings %}
+    <div class="bg-white p-4 rounded-lg shadow-md">
+      <img
+        src="{{ listing.url_imagen }}"
+        alt="Imagen del producto"
+        class="w-full h-auto mb-4 rounded-lg"
+      />
+      <h3 class="text-lg font-semibold text-center">{{ listing.titulo }}</h3>
+      <p class="text-sm text-gray-600 text-center">{{ listing.descripcion }}</p>
+      <p class="text-sm text-center">
+        Oferta inicial: ${{ listing.oferta_inicial }}
+      </p>
+
+      <span class="text-sm ml-8 text-gray-600 text-center" >Fecha de creación: {{ listing.fecha_creacion }}</span>
+
+      <a href="{% url 'mostrar_detalle' listing.id %}">
+     <button class="bg-slate-500 hover-bg-slate-400 text-white font-bold py-2 px-4 border-b-4 border-slate-700 hover:border-slate-500 rounded mt-5  w-full" >Ver listado</button> 
+    </a>
+    </div>
+    {% endfor %}
+  </div>
+</div>
 {% endblock %}

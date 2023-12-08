@@ -1,0 +1,33 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+    <h2>Create Listing</h2>
+    
+    {% if message %}
+        <div>{{ message }}</div>
+    {% endif %}
+
+    <form action="{% url 'crearlistado' %}" method="post">
+        {% csrf_token %}
+        <div class="mb-4">
+            <input hidden class="w-full px-3 py-2 border rounded-md" type="text" name="autor" value="{{ user.username }}">
+            <input autofocus class="w-full px-3 py-2 border rounded-md" type="text" name="title" placeholder="Title">
+        </div>
+        <div class="mb-4">
+            <textarea class="w-full px-3 py-2 border rounded-md" type="text" name="description" placeholder="Description"></textarea>
+        </div>
+        <div class="mb-4">
+            <input class="w-full px-3 py-2 border rounded-md" type="number" name="starting_bid" placeholder="Starting Bid">
+        </div>
+        <div class="mb-4">
+            <input class="w-full px-3 py-2 border rounded-md" type="text" name="image_url" placeholder="Image URL">
+        </div>
+        <div class="mb-4">
+            <input class="w-full px-3 py-2 border rounded-md" type="text" name="category" placeholder="Category">
+        </div>
+        <button class="w-full px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600" type="submit">Create</button>
+    </form>
+
+
+{% endblock %}
